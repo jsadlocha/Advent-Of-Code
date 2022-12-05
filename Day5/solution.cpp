@@ -26,9 +26,7 @@ public:
 void parseStack(ifstream& file, vector<deque<char>>& dque)
 {
   string line;
-  vector<deque<char>>::iterator it;
   char pos[] = {1,5,9,13,17,21,25,29,33};
-  it = dque.begin();
 
   while(getline(file, line))
   {
