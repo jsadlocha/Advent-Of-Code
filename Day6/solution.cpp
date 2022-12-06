@@ -12,15 +12,13 @@ void find_message(string& msg, int mark_len)
   set<char> cset;
 
   for(auto i = 0; i<mark_len; ++i)
-  {
     deq.push_back(msg[i]);
-  }
+    
   for(auto i = mark_len; i < msg.size(); ++i)
   {
     for(auto i : deq)
-    {
       cset.insert(i);
-    }
+
     if(cset.size() == mark_len)
     {
       cout<<"Solution: "<<i<<endl;

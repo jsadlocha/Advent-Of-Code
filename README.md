@@ -3,7 +3,17 @@ I challenge this advent in the craziest possible way :>
 
 
 Solutions be written in:
-- C++
-- Rust
-- Asm x64 without libraries
-- Kernel Driver as supervisor
+
+| Language | Days |
+| --- | --- |
+| C++ |1,2,3,4,5,6 |
+| Python | 6 |
+| Javascript | |
+
+☑️✅
+Special solution written in: (only Day1)
+- Asm amd64 without libraries 
+- Baremetal OS
+- Linux Kernel Driver
+- Windows Kernel Driver
+- Fpga Verilog hardware circuit
