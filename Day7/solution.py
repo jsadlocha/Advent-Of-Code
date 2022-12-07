@@ -2,7 +2,6 @@ from collections import deque
 import string
 import random
 file = open('input.txt').read()
-
 it = iter(file.split('\n'))
 
 file_size = {}
@@ -28,8 +27,6 @@ for line in it:
       if c_tree.get('file') is None:
         c_tree['file'] = []
       c_tree['file'].append(int(arg[0]))
-
-
 
 def dfs(tree, path):
   global file_size
@@ -58,6 +55,7 @@ for i in file_size:
 print(f'Solution1: {res}')
 
 b = dict(sorted(file_size.items(), key=lambda x: x[1]))
-print(f'min size needed = {30000000-(70000000-file_size["/"])}')
-print(f'Solution2: {list(filter(lambda x: x[1] > 3837783, b.items()))[0][1]}')
+minimum = 30000000-(70000000-file_size["/"])
+print(f'min size needed = {minimum}')
+print(f'Solution2: {list(filter(lambda x: x[1] > minimum, b.items()))[0][1]}')
 
