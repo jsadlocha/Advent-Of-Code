@@ -1,42 +1,37 @@
-from dataclasses import dataclass
-
-@dataclass
-class Point:
-  x: int
-  y: int
-
-@dataclass
-class Snake:
-  head: Point
-  tail: Point
-
-def move(dir: str, s: Snake, count: int, visited: set):
-  for i in range(count):
-    x, y = s.head.x, s.head.y
+def move(dir: str, s: list, count: int, visited: set):
+  for j in range(count):
     if dir == 'R':
-      s.head.x += 1
+      s[0][0] += 1
     elif dir == 'L':
-      s.head.x -= 1
+      s[0][0] -= 1
     elif dir == 'U':
-      s.head.y += 1
+      s[0][1] += 1
     elif dir == 'D':
-      s.head.y -= 1
+      s[0][1] -= 1
 
-    if abs(s.head.x - s.tail.x) > 1 or abs(s.head.y - s.tail.y) > 1:
-      s.tail.x = x
-      s.tail.y = y
-      visited.add((x,y))
+    for i in range(1,len(s)):
 
+      if abs(s[i-1][0] - s[i][0]) > 1 or abs(s[i-1][1] - s[i][1]) > 1:
+        s[i][0] += 0 if (s[i-1][0] == s[i][0]) else 1 if (s[i-1][0] > s[i][0]) else -1
+        s[i][1] += 0 if (s[i-1][1] == s[i][1]) else 1 if (s[i-1][1] > s[i][1]) else -1
+        if i == (len(s)-1):
+          visited.add((s[i][0],s[i][1]))
 
-  
-line = open('input.txt').read().split('\n')
-snake = Snake(Point(0,0), Point(0,0))
+line = open('input.txt').read().split('\n')[:-1]
+snake = [[0,0] for i in range(2)]
 visited = set()
 visited.add((0,0))
-for i in line[:-1]:
-  op, count = i.split(' ')
 
+for i in line:
+  op, count = i.split(' ')
   move(op, snake, int(count), visited)
 
+snake = [[0,0] for i in range(10)]
+visited2 = set()
+visited2.add((0,0))
+for i in line:
+  op, count = i.split(' ')
+  move(op, snake, int(count), visited2)
 
 print(f'Solution1: {len(visited)}')
+print(f'Solution2: {len(visited2)}')
