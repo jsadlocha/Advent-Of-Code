@@ -2,6 +2,7 @@
 demo = """>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
 """
 
+from collections import deque
 import copy
 inp = demo
 inp = open('input.txt').read()
@@ -59,7 +60,6 @@ def printBlocks(blk, blk_width, row_max=2, col_max=7):
       print('')
     print('+-------+')
 
-# printBlocks(blk_elements, blk_width)
 
 grid_parse = """.......
 .......
@@ -91,8 +91,6 @@ def drawBrick(brick, brick_size):
     s.append(rs)
   return s
 
-# b = drawBrick(blk_elements[2], blk_width[2])
-# printGrid(b+grid_parse)
 
 def precheck(grid, brick, row_offset, col_offset):
   move_possible = True
@@ -109,114 +107,129 @@ def precheck(grid, brick, row_offset, col_offset):
         break
   return move_possible
 
+def hash_func(grid, top, max_row, new_top):
+  lookup = {'.': 0, '#': 1}
+  hash_sum = 0
+  for idx in range(top-max_row, top):
+    for col in range(len(grid[0])):
+      hash_sum *= 2
+      hash_sum += lookup[grid[idx][col]]
+  return hash_sum % (2**64+1)
+
 empty_line = ['.......']
 # grid_parse = empty_line+grid_parse
 
-# change grid to list
-grid2 = []
-for line in grid_parse:
-  grid2.append(list(line))
+def solve_hight(rooks_number, red_flag):
+  # change grid to list
+  lookup_table = {}
+  rk_num = 0
+  grid2 = []
+  for line in grid_parse:
+    grid2.append(list(line))
 
-row_offset = start_row
-row_offset_global = 3
-col_offset = start_col
-col_offset_global = 2
-start_offset_global = 3
-wind_idx = 0
-high_point = 0
-for i in range(2022):
-  b = blk_elements[i % 5]
-  row_offset_global = start_offset_global
-  col_offset = col_offset_global
-  
-  for i in range(start_offset_global+blk_width[i%5] - len(grid2)):
-    grid2 = grid2 + [list('.......')]
-  
-  row_offset = row_offset_global
-  
-  # #draw on grid debug
-  # grid3 = copy.deepcopy(grid2)
-  # #printGrid(grid3)
-  # for row, col in b:
-  #   grid3[row+row_offset][col+col_offset] = '#'
-  # printGrid(grid3)
-
-  # brick falling
-  while True:    
-    wind_offset_col = 0
-    if wind[wind_idx] == '>':
-      wind_offset_col = 1
-    else:
-      wind_offset_col = -1
-    
-    # print('before wind')
-    # # draw on grid debug
-    # grid3 = copy.deepcopy(grid2)
-    # #printGrid(grid3)
-    # for row, col in b:
-    #   # print(f'row: {row} col {col}')
-    #   # print(len(grid3))
-    #   # print(len(grid3[0]))
-    #   grid3[row+row_offset][col+col_offset] = '#'
-    # printGrid(grid3)
-    
-    old_col = col_offset
-    if precheck(grid2, b, row_offset, col_offset+wind_offset_col):
-      col_offset+=wind_offset_col
-
-    # print('after wind')
-    # # draw on grid debug
-    # grid3 = copy.deepcopy(grid2)
-    # #printGrid(grid3)
-    # for row, col in b:
-    #   #print(f'row: {row} col {col}')
-    #   grid3[row+row_offset][col+col_offset] = '#'
-    # printGrid(grid3)
-    
-    # precheck
-    move_possible = precheck(grid2, b, row_offset-1, col_offset)
-    if move_possible:
-      row_offset-=1
-
-    # print('after move')
-    # # draw on grid debug
-    # grid3 = copy.deepcopy(grid2)
-    # #printGrid(grid3)
-    # for row, col in b:
-    #   #print(f'row: {row} col {col}')
-    #   grid3[row+row_offset][col+col_offset] = '#'
-    # printGrid(grid3)
+  new_rook_number = 0
+  new_high_top = 0
+  last_high_top = 0
+  row_offset = start_row
+  row_offset_global = 3
+  col_offset = start_col
+  col_offset_global = 2
+  start_offset_global = 3
+  wind_idx = 0
+  high_point = 0
+  old_rooks = 0
+  old_high_point = 0
+  for i in range(rooks_number): 
+    new_rook_number += 1
+    if new_rook_number >= rooks_number:
+     break
     
     
-    wind_idx += 1
-    wind_idx %= len(wind)
-
-    if move_possible == False:
+    rk_num += 1
+    if rk_num == rooks_number:
       break
 
-  #highest point
-  max_row = 0
-  for row, col in b:
-    max_row = max(row+row_offset, max_row)
+    b = blk_elements[i % 5]
+    row_offset_global = start_offset_global
+    col_offset = col_offset_global
+    
+    for i in range(start_offset_global+blk_width[i%5] - len(grid2)):
+      grid2 = grid2 + [list('.......')]
+    
+    row_offset = row_offset_global
+    
+    # brick falling
+    while True:    
+      wind_offset_col = 0
+      if wind[wind_idx] == '>':
+        wind_offset_col = 1
+      else:
+        wind_offset_col = -1
+      
+      old_col = col_offset
+      if precheck(grid2, b, row_offset, col_offset+wind_offset_col):
+        col_offset+=wind_offset_col
+
+      
+      # precheck
+      move_possible = precheck(grid2, b, row_offset-1, col_offset)
+      if move_possible:
+        row_offset-=1
+
+      
+      wind_idx += 1
+      wind_idx %= len(wind)
+      
+      if move_possible == False:
+        break
+
+   
+    for row, col in b:
+      high_point = max(high_point, row+row_offset)
+      grid2[row+row_offset][col+col_offset] = '#'
+    
+    start_offset_global = high_point +4
+
+    if red_flag:
+      if rk_num > 20:
+        if lookup_table.get((hash_func(grid2, high_point, 20, 0), wind_idx)):
+          
+          last_high, num_rooks = lookup_table[(hash_func(grid2, high_point, 20, 0), wind_idx)]
+          diff = high_point-last_high
+          diff_rook = rk_num - num_rooks
+          old_rooks = rk_num
+          old_high_point = high_point
+        
+          new_rook_number = rk_num
+          new_high_top = high_point
+          remaining_rooks = rooks_number
+          ex = True
+          while ex:
+            times = remaining_rooks//diff_rook 
+            if remaining_rooks < 20:
+              ex = False
+             
+            
+            new_rook_number = new_rook_number+(diff_rook*times)
+            new_high_top = new_high_top+(diff*times)
+
+            
+            last_high_top = high_point
+            remaining_rooks -= diff_rook * times
+          
+          
+       
+          new_rook_number -= diff_rook*2
+          new_high_top-=diff*2
+    
+          red_flag = False
+        else:
+          lookup_table[(hash_func(grid2, high_point, 20, new_high_top), wind_idx)] = (high_point, rk_num)
+    
   
 
-  #draw on grid debug
-  #grid3 = copy.deepcopy(grid2)
-  # print(b)
-  # print(row_offset)
-  # print(col_offset)
-  for row, col in b:
-    high_point = max(high_point, row+row_offset)
-    #print(high_point)
-    grid2[row+row_offset][col+col_offset] = '#'
-    # grid2[row][col] = '#'
-  # printGrid(grid2)
-  start_offset_global = high_point +4
-  # print('next')
-  # break
-printGrid(grid2)
-print(len(grid2))
-print(f'Solution1: {high_point+1}')
+  return new_high_top+high_point-old_high_point+1
 
-
-
+fall_number = 1_000_000_000_000
+print(f'Solution1: {solve_hight(2023, False)}')
+print(f'Solution2: {solve_hight(1_000_000_000_001, True)}')
