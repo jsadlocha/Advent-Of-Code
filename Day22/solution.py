@@ -130,4 +130,129 @@ for moves, dir in path:
 # print_grid(grid)
 
 sol1 = (1000*r)+(4*c)+d
+
+# trawerse grid
+r = start_row
+c = start_col
+d = start_dir
+
+for moves, dir in path:
+  _c = c
+  _r = r
+  for i in range(int(moves)):
+    # grid[_r][_c] = s_dir[d]
+    old_c = _c
+    old_r = _r
+    old_d = d
+    if d == 0:
+      _c += 1
+    elif d == 1:
+      _r += 1
+    elif d == 2:
+      _c -= 1
+    elif d == 3:
+      _r -= 1
+
+    if grid[_r][_c] == ' ':
+      # U
+      if 51 <= c and 100 >= c and 1 <= r and 50 >= r:
+        if _r < 1:
+          _r = (c-50)+150
+          _c = 1
+          d = 0
+        elif _c < 51:
+          _r = 151-r
+          _c = 1
+          d = 0
+
+      # R
+      elif 101 <= c and 150 >= c and 1 <= r and 50 >= r:
+        if _r < 1:
+          _c = c-100
+          _r = 200
+          d = 3
+
+        elif _c > 150:
+          _r = 151-r
+          _c = 100
+          d = 2
+
+        elif _r > 50:
+          _r = c-100+50
+          _c = 100
+          d = 2
+
+      # F
+      elif 51 <= c and 100 >= c and 51 <= r and 100 >= r:
+        if _c < 51:
+          _c = r-50
+          _r = 101
+          d = 1
+
+        elif _c > 100:
+          _c = _r+50#-50+100
+          _r = 50
+          d = 3
+
+      # D
+      elif 51 <= c and 100 >= c and 101 <= r and 150 >= r:
+        if _c > 100:
+          _r = 51-(r-100)
+          _c = 150
+          d = 2
+
+        elif _r > 150:
+          _r = (c-50)+150
+          _c = 50
+          d = 2
+
+      # L
+      elif 1 <= c and 50 >= c and 101 <= r and 150 >= r:
+        if _r < 101:
+          _r = c+50
+          _c = 51
+          d = 0
+
+        elif _c < 1:
+          _r = 51-(r-100)
+          _c = 51
+          d = 0
+
+      # B
+      elif 1 <= c and 50 >= c and 151 <= r and 200 >= r:
+        if _c < 1:
+          _c = (r-150)+50
+          _r = 1
+          d = 1
+
+        elif _c > 50:
+          _c = r-150+50
+          _r = 150
+          d = 3
+
+        elif _r > 200:
+          _c = c+100
+          _r = 1
+          d = 1
+
+    if grid[_r][_c] == '#':
+      _c = old_c
+      _r = old_r
+      d = old_d
+      break  
+
+    c = _c
+    r = _r
+    grid[r][c] = s_dir[d]
+  
+  if dir == 'R':
+    d = (d+1) % 4
+  elif dir == 'L':
+    d = (d-1) % 4
+
+
+# print_grid(grid)
+sol2 = (1000*r)+(4*c)+d
+
 print(f'Solution1: {sol1}')
+print(f'Solution2: {sol2}')
