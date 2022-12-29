@@ -73,23 +73,18 @@ def check_if_alone(elv, elv_list, nswe):
   alone = True
   for d in nswe:
     for r, c in d:
-      for elv_test in elv_list:
-        if (elv.r+r) == elv_test.r and (elv.c+c)== elv_test.c:
-          alone = False
-          break
+      if (elv.r+r, elv.c+c) in elv_list:
+        return False
   return alone
 
 def check_if_mov_available(elv, elv_list, nswe):
   for i in range(4):
-    space = True
+    space = False
     for r,c in nswe[(elv.d+i)%4]:
-      for e in elv_list:
-        if elv.r+r == e.r and elv.c+c == e.c:
-          space = False
-          break
-    if space:
+      if (elv.r+r, elv.c+c) in elv_list:
+        break
+    else:
       return True
-  
   return space
     
 
@@ -97,10 +92,9 @@ def get_proposed_move(elv, elv_list, nswe, dir_):
   for i in range(4):
     ok = True
     for r,c in nswe[(elv.d+i)%4]:
-      for e in elv_list:
-        if elv.r+r == e.r and elv.c+c == e.c:
-          ok = False
-          break
+      if (elv.r+r, elv.c+c) in elv_list:
+        ok = False
+        break
     if ok:
       r_, c_ = dir_[(elv.d+i)%4]
       return (elv.r+r_, elv.c+c_, elv.d) 
@@ -123,12 +117,16 @@ def calc_empty_space(elves):
 solution1 = 0
 solution2 = 0
 for time in range(10000):
-  print(f'{time}')
+  #print(f'{time}')
   proposed = []
   new_elfs = copy.deepcopy(elves)
 
+  elves_set = set()
+  for e in new_elfs:
+    elves_set.add((e.r, e.c))
+
   for elv in elves:
-    if not check_if_alone(elv, elves, nswe):
+    if not check_if_alone(elv, elves_set, nswe):
       break
   else:
     solution2 = time+1
@@ -136,23 +134,23 @@ for time in range(10000):
 
 
   for elv in elves:
-    if check_if_alone(elv, elves, nswe):
+    if check_if_alone(elv, elves_set, nswe):
       continue
-    if not check_if_mov_available(elv, elves, nswe):
+    if not check_if_mov_available(elv, elves_set, nswe):
       continue
 
-    x, y, d = get_proposed_move(elv, elves, nswe, direction)
+    x, y, d = get_proposed_move(elv, elves_set, nswe, direction)
     proposed.append((x,y))
 
   for elf_id, elv in enumerate(elves):
-    if check_if_alone(elv, elves, nswe):
+    if check_if_alone(elv, elves_set, nswe):
       new_elfs[elf_id].d = (d+1) % 4
       continue
-    if not check_if_mov_available(elv, elves, nswe):
+    if not check_if_mov_available(elv, elves_set, nswe):
       new_elfs[elf_id].d = (d+1) % 4
       continue
     p_ = proposed[:]
-    x, y, d = get_proposed_move(elv, elves, nswe, direction)
+    x, y, d = get_proposed_move(elv, elves_set, nswe, direction)
     p_.remove((x,y))
     if (x,y) not in p_:
       new_elfs[elf_id].r = x
