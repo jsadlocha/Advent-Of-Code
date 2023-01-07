@@ -2,11 +2,9 @@ demo = """Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. 
 Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
 """
 import re
-import gc
-# import psutil
 
 inp = demo
-# inp = open('input.txt').read()
+inp = open('input.txt').read()
 inp = inp.splitlines()
 
 recipe = []
@@ -16,36 +14,35 @@ def dfs(time, cache, robots, minerals):
   if time == 0:
     return minerals[3]
 
-  key = (time, tuple(robots), tuple(minerals))
+  key = tuple([time, *robots, *minerals])
   if key in cache:
-   return cache[key]
+    return cache[key]
 
-  max_val = 0
-  for id, r in enumerate(recipe):
-    if id != 3 and robots[id] >= mineralMaxCost[id]:
-     continue
-    for cost, mtyp in r:
-      if cost > minerals[mtyp]:
+  max_val = minerals[3] + robots[3] * time
+  
+  for btype, rec in enumerate(recipe):
+    if btype != 3 and robots[btype] >= mineralMaxCost[btype]:
+      continue
+
+    wait = 0
+    for ramt, rtype in rec:
+      if robots[rtype] == 0:
         break
+      wait = max(wait, -(-(ramt - minerals[rtype]) // robots[rtype]))
     else:
-      m = minerals[:]
-      rob = robots[:]
-      for cost, mtyp in r:
-        m[mtyp] -= cost
-      rob[id] += 1
-
-      for id, r in enumerate(robots):
-        m[id] += r
-
-      max_val = max(max_val, dfs(time-1, cache, rob, m))
-
+      remtime = time - wait - 1
+      if remtime <= 0:
+        continue
+      bots_ = robots[:]
+      amt_ = [x + y * (wait + 1) for x, y in zip(minerals, robots)]
+      for ramt, rtype in rec:
+        amt_[rtype] -= ramt
+      bots_[btype] += 1
+      for i in range(3):
+        amt_[i] = min(amt_[i], mineralMaxCost[i] * remtime)
+      max_val = max(max_val, dfs(remtime, cache, bots_, amt_))
+ 
   cache[key] = max_val 
-
-  for id, r in enumerate(robots):
-      minerals[id] += r
-  max_val = max(max_val, dfs(time-1, cache, robots[:], minerals[:]))
-  #if time == 13:
-  # gc.collect()
   return max_val
 
 # bp_list->recipe->robot_id->(mineral_cost, mineraltype)
@@ -65,8 +62,6 @@ for idx, line in enumerate(inp):
   maxGeode = dfs(24, {}, [1,0,0,0], [0,0,0,0])
   print(f'id: {idx} max geode: {maxGeode}')
   total += (idx+1) * maxGeode
-  gc.collect()
-
 
 total2 = 1
 for idx, line in enumerate(inp):
@@ -83,9 +78,8 @@ for idx, line in enumerate(inp):
   maxGeode = dfs(32, {}, [1,0,0,0], [0,0,0,0])
   print(f'id: {idx} max geode: {maxGeode}')
   total2 *= maxGeode
-  gc.collect()
-  
-  if idx == 3:
+
+  if idx == 2:
     break
 
 print(f'Solution1: {total}')
