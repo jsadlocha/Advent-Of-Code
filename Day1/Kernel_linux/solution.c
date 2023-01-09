@@ -20,23 +20,22 @@ static int run_cmd(int s1, int s2)
 {
   const char *fmt = "echo \"Advent of Code Day1:\n\";echo \"Solution1: %d\n\";echo \"Solution2: %d\n\n\";bash";
   char buf[128];
-	struct subprocess_info *sub_info;
-	static char *envp[] = {
+  struct subprocess_info *sub_info;
+  static char *envp[] = {
     "XDG_RUNTIME_DIR=/run/user/1000",
     "DISPLAY=:0",
-		"HOME=/",
-		"PATH=/sbin:/bin:/usr/sbin:/usr/bin",
-		NULL
-	};
+    "HOME=/",
+    "PATH=/sbin:/bin:/usr/sbin:/usr/bin",
+    NULL
+  };
   char *argv[] = {"/usr/bin/gnome-terminal", "--", "bash", "-c", NULL, NULL};
-	int ret;
-	snprintf(buf, 128, fmt, s1, s2);
-	argv[4] = buf;
-	
-	sub_info = call_usermodehelper_setup(argv[0], argv, envp, GFP_ATOMIC,
-            init_func, NULL, NULL);
+  int ret;
+  snprintf(buf, 128, fmt, s1, s2);
+  argv[4] = buf;
+    
+  sub_info = call_usermodehelper_setup(argv[0], argv, envp, GFP_ATOMIC, init_func, NULL, NULL);
   ret = call_usermodehelper_exec(sub_info, UMH_KILLABLE);
-	return ret;
+  return ret;
 }
 
 static char* strtok(char *buf, char delim)
