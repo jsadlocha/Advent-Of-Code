@@ -1,0 +1,10 @@
+#pragma once
+#include <ntifs.h>
+
+#define IO_GET_CLIENTADDRESS CTL_CODE(FILE_DEVICE_UNKNOWN, 0x2222, METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
+
+NTSTATUS IoControl(PDEVICE_OBJECT pDeviceObject, PIRP pIrp);
+
+NTSTATUS CloseCall(PDEVICE_OBJECT pDeviceObject, PIRP pIrp);
+
+NTSTATUS CreateCall(PDEVICE_OBJECT pDeviceObject, PIRP pIrp);
