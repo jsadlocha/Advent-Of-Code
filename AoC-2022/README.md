@@ -12,7 +12,7 @@ Solutions be written in:
 
 ☑️✅
 Special solution written in: (only Day1)
-- [Asm amd64 without libraries](https://github.com/jsadlocha/Advent-Of-Code-2022/tree/main/Day1/Asm%20amd64) ☑️
-- [Linux Kernel Driver](https://github.com/jsadlocha/Advent-Of-Code-2022/tree/main/Day1/Kernel_linux) ☑️
-- [Windows Kernel Driver](https://github.com/jsadlocha/Advent-Of-Code-2022/tree/main/Day1/Kernel_windows) ☑️
+- [Asm amd64 without libraries](https://github.com/jsadlocha/Advent-Of-Code/tree/main/AoC-2022/Day1/Asm%20amd64) ☑️
+- [Linux Kernel Driver](https://github.com/jsadlocha/Advent-Of-Code/tree/main/AoC-2022/Day1/Kernel_linux) ☑️
+- [Windows Kernel Driver](https://github.com/jsadlocha/Advent-Of-Code/tree/main/AoC-2022/Day1/Kernel_windows) ☑️
 - Fpga Verilog hardware circuit
